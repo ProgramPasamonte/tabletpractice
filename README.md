@@ -38,3 +38,14 @@ The score at the top will show your average accuracy across all the lines you ma
 
 -+=<>=+----------------------------------------------------------------------------------------------------------------------------------+=<>=+-
 
+
+TODO
+
+A mode where you sequentially draw from one point to another. When you reach the end point, another point spawns and you draw to that.
+It will probably be a timed mode. Scored by a mix of accuracy and points hit. (Like an aim trainer).
+
+Handwriting mode. A mode where you trace the outlines of fonts. Scored on accuracy.
+
+Shape mode.
+
+Maybe a lineart mode, where you can import images and trace them (probably not though cbf).
