@@ -43,6 +43,7 @@ TODO
 
 A mode where you sequentially draw from one point to another. When you reach the end point, another point spawns and you draw to that.
 It will probably be a timed mode. Scored by a mix of accuracy and points hit. (Like an aim trainer).
+The line you draw will fade with either time or distance so it doesnt clog the screen. (will be good feedback on how steady the stroke was/is).
 
 Handwriting mode. A mode where you trace the outlines of fonts. Scored on accuracy.
 
