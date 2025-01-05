@@ -7,7 +7,9 @@ I will probably come around and add more/better features later.
 
 
 -+=<>=+-------------------------------------+=<>=+-
+
 HOW TO USE THE DIFFERENT MODES
+
 -+=<>=+-------------------------------------+=<>=+-
 
 ACCURACY MODE
