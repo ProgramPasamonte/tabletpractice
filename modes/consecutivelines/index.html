@@ -50,7 +50,8 @@
 </div>
 <div class="timer">
 	Time Remaining: </br><span id="timer">30</span> seconds</br>
-	<button id="startButton">Start Timer</button>
+	<button id="startButton">Start Timer</button></br></br>
+	<button id="endlessButton">Endless Mode</button>
 </div>
 
 <canvas id="drawingCanvas" width="1200" height="900"></canvas>
@@ -70,6 +71,7 @@
     let timeRemaining = 30; // Set initial time to 30 seconds
     const timerElement = document.getElementById('timer');
     let timerInterval;
+	let endlessMode = 0;
 
 	
 	// Set drawing style
@@ -277,10 +279,23 @@
 			accuracyElement.textContent = averageAccuracy + '% average';  // Update the accuracy display
 	}
 
+
+	//Canvas Listeners
 	canvas.addEventListener('pointerdown', startDrawing);
 	canvas.addEventListener('pointermove', draw);
 	canvas.addEventListener('pointerup', stopDrawing);
+	
+	
+	//Window Listeners
 	window.addEventListener('resize', resizeCanvas);
+	
+	//Timer Listeners
+    // Start the timer when the button is clicked
+    document.getElementById('startButton').addEventListener('click', startTimer);
+    document.getElementById('endlessButton').addEventListener('click', toggleEndlessMode);
+	
+	
+	
 	document.addEventListener('DOMContentLoaded', function() {
 			
 			initializeGame();
@@ -311,6 +326,11 @@
 		linesDrawn = 0;
 
         timerInterval = setInterval(() => {
+			if (endlessMode){
+			clearInterval(timerInterval);
+			timeRemaining = 30;
+			return;
+			}
             if (timeRemaining > 0) {
                 timeRemaining--;
                 timerElement.textContent = timeRemaining; // Update the timer display
@@ -325,9 +345,30 @@
             }
         }, 1000); // 1000ms = 1 second
     }
+	
+	    // Function to update the timer every second
+    function toggleEndlessMode() {
+        
+		//if toggling endless mode off...
+		if (endlessMode){
+		endlessMode = 0;
+		document.getElementById('startButton').disabled = false;
+		timerStarted = false;
+		timerElement.textContent = timeRemaining; // Update the timer display
+		}
+		else
+		{
+        document.getElementById('startButton').disabled = true;
+		accuracyHistory = [];
+		drawPoints();
+		linesDrawn = 0;
+		endlessMode = 1;
+		//allows drawing
+		timerStarted = true;
+		timerElement.textContent = "∞"; // Update the timer display
+		}
+    }
 
-    // Start the timer when the button is clicked
-    document.getElementById('startButton').addEventListener('click', startTimer);
 
 	
 </script>
