@@ -354,19 +354,22 @@
 		endlessMode = 0;
 		document.getElementById('startButton').disabled = false;
 		timerStarted = false;
-		timerElement.textContent = timeRemaining; // Update the timer display
 		}
 		else
 		{
         document.getElementById('startButton').disabled = true;
 		accuracyHistory = [];
 		drawPoints();
-		linesDrawn = 0;
 		endlessMode = 1;
 		//allows drawing
 		timerStarted = true;
-		timerElement.textContent = "∞"; // Update the timer display
+		// Update the timer display
+		timerElement.textContent = "∞";
 		}
+		//clear stats
+		linesDrawn = 0;
+		lineDrawnElement.textContent = linesDrawn; //Update lines completed
+		accuracyElement.textContent =  0 + ' %';  // Update the accuracy display
     }
 
 
