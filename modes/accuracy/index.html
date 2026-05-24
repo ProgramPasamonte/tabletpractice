@@ -70,10 +70,9 @@ canvas {
 .slider-container label {
     display: block; /* Force the label to be on a new line (block-level) */
     margin-top: 5px; /* Optional: adjust spacing between slider and label */
+ 	margin-right: 10px;
 }
 
- margin-right: 10px;
-        }
     </style>
 </head>
 <body>
@@ -103,6 +102,11 @@ canvas {
 		<label for="challengeModeOff">Off </label><br>
 		<input type="radio" id="challengeModeOn" name="challengeModeToggle" value="1">
 		<label for="challengeModeOn">On</label><br>
+		<span>Shape mode</span></br>
+		<input type="radio" id="shapeModeLine" name="shapeModeToggle" value="0">
+		<label for="shapeModeOff">Line </label><br>
+		<input type="radio" id="shapeModeCircle" name="shapeModeToggle" value="1">
+		<label for="shapeModeOn">Circle</label><br>
 	</div>
     <script>
         const canvas = document.getElementById('drawingCanvas');
@@ -115,6 +119,8 @@ canvas {
         let isDrawing = false;
         let score = 0;
         let startPoint, endPoint;
+		let centerX, centerY;
+		let radius;
         let drawnLine = [];
 		
 		const accuracySlider = document.getElementById('accuracySlider');
@@ -125,6 +131,10 @@ canvas {
 		const challengeModeRadios = document.querySelectorAll('input[name="challengeModeToggle"]');
 		let challengeModeToggle = 0;
 
+		const shapeModeRadios = document.querySelectorAll('input[name="shapeModeToggle"]');
+		let shapeModeToggle = 0;
+
+
         // Distance ranges for each option
         const distanceRanges = {
             large: { min: 600, max: 800 },
@@ -134,11 +144,7 @@ canvas {
 
         let selectedDistanceRanges = [];  // This will store selected ranges
 
-        // Set drawing style
-        ctx.lineWidth = 5;
-        ctx.lineCap = 'round';
-		
-				// Resize canvas based on window size
+		// Resize canvas based on window size
 		function resizeCanvas() {
 			// Set canvas width and height relative to window dimensions
 			canvas.width = window.innerWidth * 0.7;  // 90% of the viewport width
@@ -177,7 +183,7 @@ canvas {
                 startPoint = generateRandomPoint();
                 endPoint = generateRandomPoint();
                 distance = calculateDistance(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
-            } while (!isDistanceWithinSelectedRanges(distance));  // Ensure the distance is within the selected ranges
+            } while (!isDistanceWithinSelectedRanges(distance) || !circleIsWithinCanvas());  // Ensure the distance is within the selected ranges
 			
 			drawPoints();
         }
@@ -189,9 +195,29 @@ canvas {
                 const max = distanceRanges[range].max;
                 return distance >= min && distance <= max;
             });
-			
-			drawPoints();
         }
+
+		function circleIsWithinCanvas()
+		{
+			if(shapeModeToggle != 1) return true;
+
+			centerX = Math.abs(startPoint.x - endPoint.x)/2;
+			if(startPoint.x > endPoint.x) centerX = startPoint.x - centerX;
+			else centerX = startPoint.x + centerX;
+
+			centerY = Math.abs(startPoint.y - endPoint.y)/2;
+			if(startPoint.y > endPoint.y) centerY = startPoint.y - centerY;
+			else centerY = startPoint.y + centerY;
+
+			radius = Math.sqrt((startPoint.x - centerX)**2 + (startPoint.y - centerY)**2);
+
+			return (
+				centerX - radius >= 0 &&
+				centerX + radius <= canvas.width &&
+				centerY - radius >= 0 &&
+				centerY + radius <= canvas.height
+			);
+		}
 
         // Calculate the Euclidean distance between two points
         function calculateDistance(x1, y1, x2, y2) {
@@ -201,118 +227,65 @@ canvas {
         // Draw points and faint line between them
         function drawPoints() {
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing points
+			
+			//line
+			if(shapeModeToggle == 0)
+			{
+				// Draw faint line (light gray color and thinner line width)
+				ctx.strokeStyle = '#d3d3d3'; // Light gray color
+				ctx.lineWidth = 2; // Thinner line
+				ctx.beginPath();
+				ctx.moveTo(startPoint.x, startPoint.y);
+				ctx.lineTo(endPoint.x, endPoint.y);
+				ctx.stroke();
 
-            // Draw faint line (light gray color and thinner line width)
-            ctx.strokeStyle = '#d3d3d3'; // Light gray color
-            ctx.lineWidth = 2; // Thinner line
-            ctx.beginPath();
-            ctx.moveTo(startPoint.x, startPoint.y);
-            ctx.lineTo(endPoint.x, endPoint.y);
-            ctx.stroke();
+				// Draw start and end points
+				ctx.fillStyle = 'red';
+				ctx.beginPath();
+				ctx.arc(startPoint.x, startPoint.y, 2, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.fillStyle = 'green';
+				ctx.beginPath();
+				ctx.arc(endPoint.x, endPoint.y, 2, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
+			}
+			//circle
+			else if(shapeModeToggle == 1)
+			{
+				// Draw faint line (light gray color and thinner line width)
+				ctx.strokeStyle = '#d3d3d3'; // Light gray color
+				ctx.lineWidth = 2; // Thinner line
 
-            // Draw start and end points
-            ctx.fillStyle = 'red';
-            ctx.beginPath();
-            ctx.arc(startPoint.x, startPoint.y, 2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = 'green';
-            ctx.beginPath();
-            ctx.arc(endPoint.x, endPoint.y, 2, 0, Math.PI * 2);
-            ctx.fill();
-			ctx.beginPath();
+				//find the center of the circle -> the middle of both points
+				centerX = Math.abs(startPoint.x - endPoint.x)/2;
+				if(startPoint.x > endPoint.x) centerX = startPoint.x - centerX;
+				else centerX = startPoint.x + centerX;
+
+				centerY = Math.abs(startPoint.y - endPoint.y)/2;
+				if(startPoint.y > endPoint.y) centerY = startPoint.y - centerY;
+				else centerY = startPoint.y + centerY;
+
+				radius = Math.sqrt((startPoint.x - centerX)**2 + (startPoint.y - centerY)**2);
+
+				ctx.beginPath();
+				//ctx.moveTo(centerX, centerY);
+				ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+				ctx.stroke();
+
+				// Draw start and end points
+				ctx.fillStyle = 'green';
+				ctx.beginPath();
+				ctx.arc(endPoint.x, endPoint.y, 2, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
+				ctx.fillStyle = 'blue';
+				ctx.beginPath();
+				ctx.arc(centerX, centerY, 2, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
+			}
         }
-
-		// Check the accuracy of the drawn line based on pixel area comparison with Gaussian blur
-		function checkAccuracy() {
-			if (drawnLine.length < 2) return 0;
-
-			// Create a temporary canvas for the theoretical line
-			const tempCanvas = document.createElement('canvas');
-			const tempCtx = tempCanvas.getContext('2d');
-			tempCanvas.width = canvas.width;
-			tempCanvas.height = canvas.height;
-
-			// Create a temporary canvas for the drawn line
-			const drawnCanvas = document.createElement('canvas');
-			const drawnCtx = drawnCanvas.getContext('2d');
-			drawnCanvas.width = canvas.width;
-			drawnCanvas.height = canvas.height;
-
-			// Clear both canvases
-			tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-			drawnCtx.clearRect(0, 0, drawnCanvas.width, drawnCanvas.height);
-
-			// Draw the theoretical line on the tempCanvas
-			tempCtx.strokeStyle = '#000000'; // Color of the perfect line (black)
-			tempCtx.lineWidth = 5;
-			tempCtx.beginPath();
-			tempCtx.moveTo(startPoint.x, startPoint.y);
-			tempCtx.lineTo(endPoint.x, endPoint.y);
-			tempCtx.stroke();
-
-			// Apply Gaussian blur to the theoretical line
-			tempCtx.filter = 'blur(2px)';
-			tempCtx.drawImage(tempCanvas, 0, 0);
-
-			// Draw the drawn line on the drawnCanvas
-			drawnCtx.strokeStyle = '#000000'; // Color of the drawn line (black)
-			drawnCtx.lineWidth = 5;
-			drawnCtx.beginPath();
-			drawnCtx.moveTo(drawnLine[0].x, drawnLine[0].y);
-
-			for (let i = 1; i < drawnLine.length; i++) {
-				drawnCtx.lineTo(drawnLine[i].x, drawnLine[i].y);
-			}
-			drawnCtx.stroke();
-
-			// Apply Gaussian blur to the drawn line
-			drawnCtx.filter = 'blur(2px)';
-			drawnCtx.drawImage(drawnCanvas, 0, 0);
-
-			// Get image data for both the generated theoretical line and the drawn line
-			const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-			const drawnImageData = drawnCtx.getImageData(0, 0, drawnCanvas.width, drawnCanvas.height);
-
-			// Compare the pixel coverage between the two images
-			let overlappingPixels = 0;
-			let totalPixels = 0;
-
-			// Loop through all the pixels
-			for (let i = 0; i < tempImageData.data.length; i += 4) {
-				const r1 = tempImageData.data[i];     // Theoretical line red channel
-				const g1 = tempImageData.data[i + 1]; // Theoretical line green channel
-				const b1 = tempImageData.data[i + 2]; // Theoretical line blue channel
-				const a1 = tempImageData.data[i + 3]; // Theoretical line alpha channel
-
-				const r2 = drawnImageData.data[i];    // Drawn line red channel
-				const g2 = drawnImageData.data[i + 1];// Drawn line green channel
-				const b2 = drawnImageData.data[i + 2];// Drawn line blue channel
-				const a2 = drawnImageData.data[i + 3];// Drawn line alpha channel
-
-				// Check if this pixel is part of the line in the theoretical line (non-transparent)
-				const isTheoreticalLine = r1 === 0 && g1 === 0 && b1 === 0 && a1 > 0;
-
-				// Check if this pixel is part of the drawn line (non-transparent)
-				const isDrawnLine = r2 === 0 && g2 === 0 && b2 === 0 && a2 > 0;
-
-				// Count the pixels
-				if (isTheoreticalLine || isDrawnLine) {
-					totalPixels++;
-				}
-
-				// Count the overlapping pixels
-				if (isTheoreticalLine && isDrawnLine) {
-					overlappingPixels++;
-				}
-			}
-
-			// Calculate accuracy based on the overlap of pixels
-			const accuracy = (overlappingPixels / totalPixels) * 100;
-			return accuracy;
-		}
-
-
-
 
 		// Start drawing (pointerdown event)
 		function startDrawing(event) {
@@ -405,16 +378,35 @@ canvas {
 			drawnCtx.clearRect(0, 0, drawnCanvas.width, drawnCanvas.height);
 
 			// Draw the theoretical line on the tempCanvas
-			tempCtx.strokeStyle = '#000000'; // Color of the perfect line (black)
-			tempCtx.lineWidth = 5;
-			tempCtx.beginPath();
-			tempCtx.moveTo(startPoint.x, startPoint.y);
-			tempCtx.lineTo(endPoint.x, endPoint.y);
-			tempCtx.stroke();
+			//line
+			if(shapeModeToggle == 0)
+			{
+				tempCtx.strokeStyle = '#000000'; // Color of the perfect line (black)
+				tempCtx.lineWidth = 5;
+				tempCtx.beginPath();
+				tempCtx.moveTo(startPoint.x, startPoint.y);
+				tempCtx.lineTo(endPoint.x, endPoint.y);
+				tempCtx.stroke();
 
-			// Apply Gaussian blur to the theoretical line
-			tempCtx.filter = 'blur(2px)';
-			tempCtx.drawImage(tempCanvas, 0, 0);
+				// Apply Gaussian blur to the theoretical line
+				tempCtx.filter = 'blur(2px)';
+				tempCtx.drawImage(tempCanvas, 0, 0);
+			}
+			//circle
+			else if(shapeModeToggle == 1)
+			{
+				// Draw the theoretical line on the tempCanvas
+				tempCtx.strokeStyle = '#000000'; // Color of the perfect line (black)
+				tempCtx.lineWidth = 5;
+				tempCtx.beginPath();
+				tempCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+				tempCtx.stroke();
+
+				// Apply Gaussian blur to the theoretical line
+				tempCtx.filter = 'blur(2px)';
+				tempCtx.drawImage(tempCanvas, 0, 0);
+			}
+
 
 			// Draw the drawn line on the drawnCanvas
 			drawnCtx.strokeStyle = '#000000'; // Color of the drawn line (black)
@@ -508,6 +500,17 @@ canvas {
 				accuracyLabel.textContent = accuracyThreshold;
 			});
 		});
+
+		//update challengeModeToggle
+		shapeModeRadios.forEach(radio => {
+			radio.addEventListener('change', () => {
+				// Get the current value of the selected radio button
+				shapeModeToggle = parseInt(document.querySelector('input[name="shapeModeToggle"]:checked').value);
+				changeAccuracyThreshold(parseInt(accuracySlider.value));
+				accuracyLabel.textContent = accuracyThreshold;
+				generatePointsWithinSelectedRanges();
+			});
+		});
 		
 		// Update the selected distance ranges when the user toggles the checkboxes
 		distanceCheckboxes.forEach(checkbox => {
@@ -544,7 +547,13 @@ canvas {
 				}
 			}
 			
+			shapeModeToggle = parseInt(document.querySelector('input[name="shapeModeToggle"]:checked').value);
+			
 			generatePointsWithinSelectedRanges();
+			
+			// Set drawing style
+			ctx.lineWidth = 2;
+			ctx.lineCap = 'round';
 			
 		}
 
