@@ -2,8 +2,10 @@ Access via:
 https://programpasamonte.github.io/tabletpractice/
 
 Description:
-Crappy little things for practicing tablet drawing accuracy with.
+Practicing tablet drawing accuracy.
 I will probably come around and add more/better features later.
+
+Code is ass but it works so idc.
 
 
 -+=<>=+-------------------------------------+=<>=+-
@@ -34,28 +36,29 @@ Challenge mode (will probably remove later):
 Disables the accuracy threshold. Each stroke will generate a new line. 
 The score at the top will show your average accuracy across all the lines you made while challenge mode is toggled.
 
+Shape mode:
+Choose from line or circle currently/
+
 -+=<>=+-------------------------------------+=<>=+-
 
 CONSECUTIVE LINE MODE
 
 To begin:
 Start the timer. 
-You have 30s to draw as many accuracte lines as possible. 
+You have 30s to draw as many accurate lines as possible. 
 
 Draw from the start point (green) to the end point (red).
-A new line will start at the previous end point. 
+A new line will be created when you reach the end point.
+
+Do not take your pen off the tablet. 
 
 -+=<>=+-------------------------------------+=<>=+-
 
 TODO
 
-A mode where you sequentially draw from one point to another. When you reach the end point, another point spawns and you draw to that.
-It will probably be a timed mode. Scored by a mix of accuracy and points hit. (Like an aim trainer).   BAREBONES IMPLEMENTED 
-
-The line you draw will fade with either time or distance so it doesnt clog the screen. (will be good feedback on how steady the stroke was/is). WIP
-
 Handwriting mode. A mode where you trace the outlines of fonts. Scored on accuracy.
 
-Shape mode.
+Shape mode. 
+  -> Circles added.
 
 Maybe a lineart mode, where you can import images and trace them (probably not though cbf).
