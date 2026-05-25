@@ -73,11 +73,6 @@
     let timerInterval;
 	let endlessMode = 0;
 
-	
-	// Set drawing style
-	ctx.lineWidth = 5;
-	ctx.lineCap = 'round';
-
 	// Resize canvas based on window size
 	function resizeCanvas() {
 		canvas.width = window.innerWidth * 0.7;
@@ -140,6 +135,26 @@
 		ctx.strokeStyle = 'black';
 		ctx.lineTo(x, y);
 		ctx.stroke();
+
+		
+		// Check if endpoint is drawn over
+		if (isNearPoint(drawnLine[drawnLine.length - 1], endPoint) && timerStarted) {
+
+			const accuracy = checkAccuracy();
+			score = Math.round(accuracy);
+			isDrawing = false;
+
+			// Swap start and endpoint
+			startPoint = endPoint;
+			endPoint = generateRandomPoint();
+
+			
+			updateAccuracyHistory(score);
+			drawPoints();
+			startDrawing(event);
+			linesDrawn++;
+			lineDrawnElement.textContent = linesDrawn; //Update lines completed
+		}
 	}
 
 	// Stop drawing (pointerup event)
@@ -148,17 +163,7 @@
 		const accuracy = checkAccuracy();
 		score = Math.round(accuracy);
 
-		// Check if endpoint is drawn over
-		if (isNearPoint(drawnLine[drawnLine.length - 1], endPoint) && timerStarted) {
-			// Swap start and endpoint
-			startPoint = endPoint;
-			endPoint = generateRandomPoint();
-			updateAccuracyHistory(score);
-			drawPoints();
-			linesDrawn++;
-			lineDrawnElement.textContent = linesDrawn; //Update lines completed
-		}
-		else if (timerStarted)
+		if (timerStarted)
 		{
 			updateAccuracyHistory(0);
 			drawPoints();
@@ -314,6 +319,10 @@
 	function initializeGame() {
 		resizeCanvas();
 		generatePoints();
+		
+		// Set drawing style
+		ctx.lineWidth = 2;
+		ctx.lineCap = 'round';
 	}
 	
     // Function to update the timer every second
