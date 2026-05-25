@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Tablet Practice - Accuracy</title>
+    <title>Tablet Practice - Accuracy</title>
     <style>
 body {
     font-family: Arial, sans-serif;
@@ -201,13 +201,8 @@ canvas {
 		{
 			if(shapeModeToggle != 1) return true;
 
-			centerX = Math.abs(startPoint.x - endPoint.x)/2;
-			if(startPoint.x > endPoint.x) centerX = startPoint.x - centerX;
-			else centerX = startPoint.x + centerX;
-
-			centerY = Math.abs(startPoint.y - endPoint.y)/2;
-			if(startPoint.y > endPoint.y) centerY = startPoint.y - centerY;
-			else centerY = startPoint.y + centerY;
+			centerX = startPoint.x - (startPoint.x - endPoint.x)/2;
+			centerY = startPoint.y - (startPoint.y - endPoint.y)/2;
 
 			radius = Math.sqrt((startPoint.x - centerX)**2 + (startPoint.y - centerY)**2);
 
@@ -258,13 +253,8 @@ canvas {
 				ctx.lineWidth = 2; // Thinner line
 
 				//find the center of the circle -> the middle of both points
-				centerX = Math.abs(startPoint.x - endPoint.x)/2;
-				if(startPoint.x > endPoint.x) centerX = startPoint.x - centerX;
-				else centerX = startPoint.x + centerX;
-
-				centerY = Math.abs(startPoint.y - endPoint.y)/2;
-				if(startPoint.y > endPoint.y) centerY = startPoint.y - centerY;
-				else centerY = startPoint.y + centerY;
+				centerX = startPoint.x - (startPoint.x - endPoint.x)/2;
+				centerY = startPoint.y - (startPoint.y - endPoint.y)/2;
 
 				radius = Math.sqrt((startPoint.x - centerX)**2 + (startPoint.y - centerY)**2);
 
