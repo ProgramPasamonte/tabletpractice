@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablet Practice - Accuracy</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+    position: relative;
+}
+
+canvas {
+    border: 1px solid black;
+    cursor: crosshair;
+	height: 80vh;
+	width: 70vw;
+}
+
+.button-container {
+    position: absolute;
+    top: 65%;
+    left: 10px;
+    text-align: center; /* Center the content inside the container */
+	background-color: rgba(255, 255, 255, 0.8);
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+    </style>
+</head>
+<body>
+    <canvas id="drawingCanvas" width="1200" height="900"></canvas>
+
+	<div class="button-container">
+		<button type="button" id="resetButton">Reset Canvas</button>
+	</div>
+    <script>
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const resetButton = document.getElementById('resetButton');
+		
+
+        let isDrawing = false;
+        // Distance ranges for each option
+
+		// Resize canvas based on window size
+		function resizeCanvas() {
+			// Set canvas width and height relative to window dimensions
+			canvas.width = window.innerWidth * 0.7; 
+			canvas.height = window.innerHeight * 0.8;
+		}
+
+        // Draw points and faint line between them
+        function resetCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing points
+		}
+
+		// Start drawing (pointerdown event)
+		function startDrawing(event) {
+			isDrawing = true;
+			
+			// Get the canvas position relative to the page
+			const rect = canvas.getBoundingClientRect();
+			
+			// Use event.clientX and event.clientY to get the position relative to the canvas
+			const x = event.clientX - rect.left;
+			const y = event.clientY - rect.top;
+
+			// Start drawing immediately at the current position
+			ctx.beginPath();  // Start a new path to avoid any unwanted gaps
+			ctx.moveTo(x, y);  // Move to the exact pen position
+		}
+
+		// Draw on the canvas (pointermove event)
+		function draw(event) {
+			if (!isDrawing) return;
+
+			// Get the current position of the pen relative to the canvas
+			const rect = canvas.getBoundingClientRect();
+			const x = event.clientX - rect.left;
+			const y = event.clientY - rect.top;
+
+			// Push current position to drawnLine for accuracy check
+
+			// Draw the line from the last point to the current position
+			ctx.strokeStyle = 'black';  // Set the line color to black
+			ctx.lineTo(x, y);
+			ctx.stroke();
+		}
+		// Stop drawing (pointerup event)
+		function stopDrawing() {
+			isDrawing = false;
+
+			ctx.beginPath();
+		}
+
+		// Use pointer events consistently for both mouse and tablet
+		canvas.addEventListener('pointerdown', startDrawing);
+		canvas.addEventListener('pointermove', draw);
+		canvas.addEventListener('pointerup', stopDrawing);
+		window.addEventListener('resize', resizeCanvas);	
+		document.addEventListener('DOMContentLoaded', function() {
+					initializeGame();
+		}, false);	
+
+		// Optional: Enable touch support for mobile devices
+		canvas.addEventListener('touchstart', (event) => {
+			event.preventDefault();
+			startDrawing(event.touches[0]);
+		});
+
+		canvas.addEventListener('touchmove', (event) => {
+			event.preventDefault();
+			draw(event.touches[0]);
+		});
+
+			
+		// Update the accuracy based on the slider value
+		resetButton.addEventListener('click', () => {
+			resetCanvas();
+		});
+
+		// Initialize the game
+		function initializeGame() {
+			resizeCanvas();
+			// Set drawing style
+			ctx.lineWidth = 2;
+			ctx.lineCap = 'round';
+			
+		}
+
+    </script>
+</body>
+</html>
