@@ -441,7 +441,7 @@ canvas {
 				var radians = Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
 
 				tempCtx.beginPath();
-				ctx.ellipse(centerX, centerY, radius*ellipseRatio, radius, radians, 0, Math.PI * 2);
+				tempCtx.ellipse(centerX, centerY, radius*ellipseRatio, radius, radians, 0, Math.PI * 2);
 				tempCtx.stroke();
 			}
 			// Apply Gaussian blur to the theoretical line
