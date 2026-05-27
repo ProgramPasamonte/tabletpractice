@@ -248,6 +248,15 @@ canvas {
 				ctx.lineTo(endPoint.x, endPoint.y);
 				ctx.stroke();
 
+				
+
+				// Draw start point and end point
+				ctx.fillStyle = 'green';
+				ctx.beginPath();
+				ctx.arc(endPoint.x, endPoint.y, 2, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
+
 				ctx.fillStyle = 'red';
 				ctx.beginPath();
 				ctx.arc(startPoint.x, startPoint.y, 2, 0, Math.PI * 2);
@@ -267,6 +276,15 @@ canvas {
 				//ctx.moveTo(centerX, centerY);
 				ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
 				ctx.stroke();
+
+				
+
+				// Draw start point and center point
+				ctx.fillStyle = 'green';
+				ctx.beginPath();
+				ctx.arc(endPoint.x, endPoint.y, 2, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
 
 				ctx.fillStyle = 'blue';
 				ctx.beginPath();
@@ -288,8 +306,17 @@ canvas {
 				// Draw faint line (light gray color and thinner line width)
 				ctx.beginPath();
 
-				ctx.ellipse(centerX, centerY, radius, radius*ellipseRatio, radians, 0, Math.PI * 2);
+				ctx.ellipse(centerX, centerY, radius*ellipseRatio, radius, radians, 0, Math.PI * 2);
 				ctx.stroke();
+
+				// Draw start point and center point
+				var x = centerX + radius*ellipseRatio * Math.cos(radians);
+				var y = centerY + radius*ellipseRatio * Math.sin(radians);
+				ctx.fillStyle = 'green';
+				ctx.beginPath();
+				ctx.arc(x, y, 2, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
 
 				ctx.fillStyle = 'blue';
 				ctx.beginPath();
@@ -297,14 +324,6 @@ canvas {
 				ctx.fill();
 				ctx.beginPath();
 			}
-			
-
-			// Draw start point
-			ctx.fillStyle = 'green';
-			ctx.beginPath();
-			ctx.arc(endPoint.x, endPoint.y, 2, 0, Math.PI * 2);
-			ctx.fill();
-			ctx.beginPath();
         }
 
 		// Start drawing (pointerdown event)
@@ -422,7 +441,7 @@ canvas {
 				var radians = Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
 
 				tempCtx.beginPath();
-				tempCtx.ellipse(centerX, centerY, radius, radius*ellipseRatio, radians, 0, Math.PI * 2);
+				ctx.ellipse(centerX, centerY, radius*ellipseRatio, radius, radians, 0, Math.PI * 2);
 				tempCtx.stroke();
 			}
 			// Apply Gaussian blur to the theoretical line
