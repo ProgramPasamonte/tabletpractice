@@ -97,6 +97,10 @@ canvas {
 	<div class="slider-container">
 		<label for="accuracySlider">Accuracy Threshold: <span id="accuracyLabel">50</span></label>
 		<input type="range" id="accuracySlider" min="0" max="100" value="50">
+
+		<label for="ellipseSlider">Ellipse Ratio: <span id="ellipseLabel">0.5</span></label>
+		<input type="range" id="ellipseSlider" min="0" max="1" value="0.5" step="0.05">
+
 		<span>Challenge mode</span></br>
 		<input type="radio" id="challengeModeOff" name="challengeModeToggle" value="0">
 		<label for="challengeModeOff">Off </label><br>
@@ -106,7 +110,9 @@ canvas {
 		<input type="radio" id="shapeModeLine" name="shapeModeToggle" value="0">
 		<label for="shapeModeOff">Line </label><br>
 		<input type="radio" id="shapeModeCircle" name="shapeModeToggle" value="1">
-		<label for="shapeModeOn">Circle</label><br>
+		<label for="shapeModeOff">Circle</label><br>
+		<input type="radio" id="shapeModeEllipse" name="shapeModeToggle" value="2">
+		<label for="shapeModeOff">Ellipse</label><br>
 	</div>
     <script>
         const canvas = document.getElementById('drawingCanvas');
@@ -124,8 +130,11 @@ canvas {
         let drawnLine = [];
 		
 		const accuracySlider = document.getElementById('accuracySlider');
+		const ellipseSlider = document.getElementById('ellipseSlider');
 		const accuracyLabel = document.getElementById('accuracyLabel');
+		const ellipseLabel = document.getElementById('ellipseLabel');
 		let accuracyThreshold = parseInt(accuracySlider.value); // Initial AccuracyThreshold
+		let ellipseRatio = parseFloat(ellipseSlider.value); // Initial Ellipse ratio value
 		let accuracyHistory = [];
 		
 		const challengeModeRadios = document.querySelectorAll('input[name="challengeModeToggle"]');
@@ -162,7 +171,12 @@ canvas {
 				accuracyThreshold = 0;
 			}
 			accuracyLabel.textContent = accuracyThreshold;
-			
+		}
+
+		function changeEllipseRatio(newEllipseRatio){
+			ellipseRatio = newEllipseRatio;
+			ellipseLabel.textContent = ellipseRatio;
+			drawPoints();
 		}
 		
 
@@ -176,7 +190,7 @@ canvas {
 
         // Generate two points with a distance within any of the selected ranges
         function generatePointsWithinSelectedRanges() {
-            if (selectedDistanceRanges.length === 0) return;
+            if (selectedDistanceRanges.length == 0) return;
 
             let distance;
             do {
@@ -199,7 +213,7 @@ canvas {
 
 		function circleIsWithinCanvas()
 		{
-			if(shapeModeToggle != 1) return true;
+			if(shapeModeToggle == 0) return true;
 
 			centerX = startPoint.x - (startPoint.x - endPoint.x)/2;
 			centerY = startPoint.y - (startPoint.y - endPoint.y)/2;
@@ -222,59 +236,75 @@ canvas {
         // Draw points and faint line between them
         function drawPoints() {
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing points
+			ctx.strokeStyle = '#d3d3d3'; // Light gray color
+			ctx.lineWidth = 2; // Thinner line
 			
 			//line
 			if(shapeModeToggle == 0)
 			{
 				// Draw faint line (light gray color and thinner line width)
-				ctx.strokeStyle = '#d3d3d3'; // Light gray color
-				ctx.lineWidth = 2; // Thinner line
 				ctx.beginPath();
 				ctx.moveTo(startPoint.x, startPoint.y);
 				ctx.lineTo(endPoint.x, endPoint.y);
 				ctx.stroke();
 
-				// Draw start and end points
 				ctx.fillStyle = 'red';
 				ctx.beginPath();
 				ctx.arc(startPoint.x, startPoint.y, 2, 0, Math.PI * 2);
 				ctx.fill();
-				ctx.fillStyle = 'green';
-				ctx.beginPath();
-				ctx.arc(endPoint.x, endPoint.y, 2, 0, Math.PI * 2);
-				ctx.fill();
-				ctx.beginPath();
 			}
 			//circle
 			else if(shapeModeToggle == 1)
 			{
-				// Draw faint line (light gray color and thinner line width)
-				ctx.strokeStyle = '#d3d3d3'; // Light gray color
-				ctx.lineWidth = 2; // Thinner line
-
 				//find the center of the circle -> the middle of both points
 				centerX = startPoint.x - (startPoint.x - endPoint.x)/2;
 				centerY = startPoint.y - (startPoint.y - endPoint.y)/2;
 
 				radius = Math.sqrt((startPoint.x - centerX)**2 + (startPoint.y - centerY)**2);
 
+				// Draw faint line (light gray color and thinner line width)
 				ctx.beginPath();
 				//ctx.moveTo(centerX, centerY);
 				ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
 				ctx.stroke();
 
-				// Draw start and end points
-				ctx.fillStyle = 'green';
-				ctx.beginPath();
-				ctx.arc(endPoint.x, endPoint.y, 2, 0, Math.PI * 2);
-				ctx.fill();
-				ctx.beginPath();
 				ctx.fillStyle = 'blue';
 				ctx.beginPath();
 				ctx.arc(centerX, centerY, 2, 0, Math.PI * 2);
 				ctx.fill();
 				ctx.beginPath();
 			}
+			//ellipse
+			else if(shapeModeToggle == 2)
+			{
+				//find the center of the circle -> the middle of both points
+				centerX = startPoint.x - (startPoint.x - endPoint.x)/2;
+				centerY = startPoint.y - (startPoint.y - endPoint.y)/2;
+				
+				radius = Math.sqrt((startPoint.x - centerX)**2 + (startPoint.y - centerY)**2);
+
+				var radians = Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
+
+				// Draw faint line (light gray color and thinner line width)
+				ctx.beginPath();
+
+				ctx.ellipse(centerX, centerY, radius, radius*ellipseRatio, radians, 0, Math.PI * 2);
+				ctx.stroke();
+				
+				ctx.fillStyle = 'blue';
+				ctx.beginPath();
+				ctx.arc(centerX, centerY, 2, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
+			}
+			
+
+			// Draw start point
+			ctx.fillStyle = 'green';
+			ctx.beginPath();
+			ctx.arc(endPoint.x, endPoint.y, 2, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
         }
 
 		// Start drawing (pointerdown event)
@@ -396,6 +426,20 @@ canvas {
 				tempCtx.filter = 'blur(2px)';
 				tempCtx.drawImage(tempCanvas, 0, 0);
 			}
+			//ellipse
+			else if(shapeModeToggle == 2)
+			{
+				// Draw the theoretical line on the tempCanvas
+				tempCtx.strokeStyle = '#000000'; // Color of the perfect line (black)
+				tempCtx.lineWidth = 5;
+
+				
+				var radians = Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
+
+				ctx.beginPath();
+				ctx.ellipse(centerX, centerY, radius, radius*ellipseRatio, radians, 0, Math.PI * 2);
+				ctx.stroke();
+			}
 
 
 			// Draw the drawn line on the drawnCanvas
@@ -479,6 +523,10 @@ canvas {
 		// Update the accuracy based on the slider value
 		accuracySlider.addEventListener('input', () => {
 			changeAccuracyThreshold(parseInt(accuracySlider.value));
+		});
+
+		ellipseSlider.addEventListener('input', () => {
+			changeEllipseRatio(parseFloat(ellipseSlider.value));
 		});
 		
 		//update challengeModeToggle
