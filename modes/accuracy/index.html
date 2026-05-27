@@ -290,7 +290,7 @@ canvas {
 
 				ctx.ellipse(centerX, centerY, radius, radius*ellipseRatio, radians, 0, Math.PI * 2);
 				ctx.stroke();
-				
+
 				ctx.fillStyle = 'blue';
 				ctx.beginPath();
 				ctx.arc(centerX, centerY, 2, 0, Math.PI * 2);
@@ -397,49 +397,37 @@ canvas {
 			tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
 			drawnCtx.clearRect(0, 0, drawnCanvas.width, drawnCanvas.height);
 
-			// Draw the theoretical line on the tempCanvas
+			// Draw the theoretical perfect line on the tempCanvas
+			tempCtx.strokeStyle = '#000000'; // Color of the perfect line (black)
+			tempCtx.lineWidth = 5;
+
 			//line
 			if(shapeModeToggle == 0)
 			{
-				tempCtx.strokeStyle = '#000000'; // Color of the perfect line (black)
-				tempCtx.lineWidth = 5;
 				tempCtx.beginPath();
 				tempCtx.moveTo(startPoint.x, startPoint.y);
 				tempCtx.lineTo(endPoint.x, endPoint.y);
 				tempCtx.stroke();
-
-				// Apply Gaussian blur to the theoretical line
-				tempCtx.filter = 'blur(2px)';
-				tempCtx.drawImage(tempCanvas, 0, 0);
 			}
 			//circle
 			else if(shapeModeToggle == 1)
 			{
-				// Draw the theoretical line on the tempCanvas
-				tempCtx.strokeStyle = '#000000'; // Color of the perfect line (black)
-				tempCtx.lineWidth = 5;
 				tempCtx.beginPath();
 				tempCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
 				tempCtx.stroke();
-
-				// Apply Gaussian blur to the theoretical line
-				tempCtx.filter = 'blur(2px)';
-				tempCtx.drawImage(tempCanvas, 0, 0);
 			}
 			//ellipse
 			else if(shapeModeToggle == 2)
 			{
-				// Draw the theoretical line on the tempCanvas
-				tempCtx.strokeStyle = '#000000'; // Color of the perfect line (black)
-				tempCtx.lineWidth = 5;
-
-				
 				var radians = Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
 
-				ctx.beginPath();
-				ctx.ellipse(centerX, centerY, radius, radius*ellipseRatio, radians, 0, Math.PI * 2);
-				ctx.stroke();
+				tempCtx.beginPath();
+				tempCtx.ellipse(centerX, centerY, radius, radius*ellipseRatio, radians, 0, Math.PI * 2);
+				tempCtx.stroke();
 			}
+			// Apply Gaussian blur to the theoretical line
+			tempCtx.filter = 'blur(2px)';
+			tempCtx.drawImage(tempCanvas, 0, 0);
 
 
 			// Draw the drawn line on the drawnCanvas
